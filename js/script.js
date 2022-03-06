@@ -5,33 +5,20 @@ const headerInput = document.querySelector(".header-input");
 const todoList = document.querySelector(".todo-list");
 const todoCompleted = document.querySelector(".todo-completed");
 const headerBtn = document.querySelector(".header-button");
-
-const basketBtn = document.querySelector(".todo-remove");
 const todoItem = document.querySelector(".todo-item");
-// console.log(todoControl);
-// console.log(headerInput);
-// console.log(todoList);
-// console.log(todoCompleted);
-// console.log(headerBtn);
-// console.log(basketBtn);
 
-const toDoData = [
-  // {
-  //   text: "Сварить кофе",
-  //   completed: false,
-  // },
-  // {
-  //   text: "Помыть посуду",
-  //   completed: true,
-  // },
-];
-console.log(toDoData);
+let toDoData = [];
+
+//сохранение данных в localStorage
+let saveLocalStorage = function () {
+  localStorage.setItem("key", JSON.stringify(toDoData));
+};
 
 const render = function () {
   todoList.innerHTML = "";
   todoCompleted.innerHTML = "";
 
-  toDoData.forEach(function (item, index) {
+  toDoData.forEach(function (item) {
     const li = document.createElement("li");
 
     li.classList.add("todo-item");
@@ -53,18 +40,27 @@ const render = function () {
 
     li.querySelector(".todo-complete").addEventListener("click", function () {
       item.completed = !item.completed;
+      saveLocalStorage();
       render();
     });
 
-    //удаление при нажатии на корзину
+    // удаление при нажатии на корзину
+    const buttonRemove = li.querySelector(".todo-remove");
 
-    toDoData.splice();
-    li.querySelector(".todo-remove").addEventListener("click", function () {
-      li.remove();
-      console.log(toDoData);
+    buttonRemove.addEventListener("click", function () {
+      let index = toDoData.indexOf(item);
+      toDoData.splice(index, 1);
+      saveLocalStorage();
+      render();
     });
+    console.log(li);
   });
 };
+
+if (localStorage.getItem("key")) {
+  toDoData = JSON.parse(localStorage.getItem("key"));
+  render();
+}
 
 todoControl.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -76,7 +72,7 @@ todoControl.addEventListener("submit", function (event) {
 
   toDoData.push(newToDo);
   headerInput.value = "";
-
+  saveLocalStorage();
   render();
 });
 
@@ -91,7 +87,6 @@ const changeButton = function () {
 const dataSend = function (event) {
   event.preventDefault();
 
-  // console.log("Отправка данных: " + headerInput.value);
   headerInput.value = "";
 
   changeButton();
@@ -100,38 +95,3 @@ const dataSend = function (event) {
 changeButton();
 headerInput.addEventListener("input", changeButton);
 todoControl.addEventListener("submit", dataSend);
-
-// function TodoCtrl($scope) {
-//   $scope.todos = [
-//     { text: "learn angular", done: true },
-
-//     { text: "build an angular app", done: false },
-//   ];
-
-//   $scope.addTodo = function () {
-//     $scope.todos.push({ text: $scope.todoText, done: false });
-
-//     $scope.todoText = "";
-//   };
-
-//   $scope.archive = function (indx) {
-//     $scope.todos.splice(indx, 1);
-//   };
-// }
-
-// function remove() {
-// var reg = document.getElementById("reg").value;
-
-// let mydiv = document.createElement("div");
-// mydiv.className = "reg";
-// mydiv.id = "mydiv";
-// mydiv.innerHTML =
-//   "<strong>Ура!</strong>Вы прочитали это важное сообщение.<button id = 'buttonCheck'>Проверить</button>";
-// document.body.appendChild(mydiv);
-//   basketBtn.onclick = removeTodoItem;
-// }
-
-// function removeTodoItem() {
-//   todoItem.remove();
-// }
-// basketBtn.addEventListener("click", remove);
